@@ -58,3 +58,26 @@
 
   (p1b (slurp "src/aoc2021/p1-input.txt"))
   )
+
+(defn p2 [args]
+  (loop [hori 0 depth 0 steps (str/split-lines args)]
+    (if (empty? steps) (* hori depth)
+        (let [step (first steps)
+              [ins val] (str/split step #" ")
+              val (Integer/parseInt val)]
+          (case ins 
+            "forward" (recur (+ hori val) depth (rest steps))
+            "down"    (recur hori (+ depth val) (rest steps))
+            "up"      (recur hori (- depth val) (rest steps))))))
+  )
+
+(comment 
+  (p2 "forward 5
+down 5
+forward 8
+up 3
+down 8
+forward 2")
+
+  (p2 (slurp "src/aoc2021/p2-input.txt"))
+  )

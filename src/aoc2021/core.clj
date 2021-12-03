@@ -15,8 +15,7 @@
        (map parse-int)
        (partition 2 1)
        (filter #(apply < %))
-       (count)
-      ))
+       (count)))
 
 (comment
   (p1 "199
@@ -30,8 +29,7 @@
 260
 263")
   
-  (p1 (slurp "src/aoc2021/p1-input.txt"))
-  )
+  (p1 (slurp "src/aoc2021/p1-input.txt")))
 
 (defn p1b [args]
   (->> args
@@ -56,8 +54,7 @@
 260
 263")
 
-  (p1b (slurp "src/aoc2021/p1-input.txt"))
-  )
+  (p1b (slurp "src/aoc2021/p1-input.txt")))
 
 (defn p2 [args]
   (loop [hori 0 depth 0 steps (str/split-lines args)]
@@ -68,8 +65,7 @@
           (case ins 
             "forward" (recur (+ hori val) depth (rest steps))
             "down"    (recur hori (+ depth val) (rest steps))
-            "up"      (recur hori (- depth val) (rest steps))))))
-  )
+            "up"      (recur hori (- depth val) (rest steps)))))))
 
 (comment 
   (p2 "forward 5
@@ -79,5 +75,29 @@ up 3
 down 8
 forward 2")
 
-  (p2 (slurp "src/aoc2021/p2-input.txt"))
-  )
+  (p2 (slurp "src/aoc2021/p2-input.txt")))
+
+(defn p2b [args]
+  (loop [hori 0 
+         depth 0 
+         aim 0 
+         steps (str/split-lines args)]
+    (if (empty? steps) (* hori depth)
+        (let [step (first steps)
+              [ins val] (str/split step #" ")
+              val (Integer/parseInt val)]
+          (case ins
+            "forward" (recur (+ hori val) (+ depth (* aim val)) aim (rest steps))
+            "down"    (recur hori depth (+ aim val) (rest steps))
+            "up"      (recur hori depth (- aim val) (rest steps)))))))
+
+(comment
+  (p2b "forward 5
+down 5
+forward 8
+up 3
+down 8
+forward 2")
+
+  (p2b (slurp "src/aoc2021/p2-input.txt")))
+

@@ -3,7 +3,7 @@
   (:require [clojure.string :as str]))
 
 (defn -main
-  "I don't do a whole lot ... yet."
+  "Run each puzzle solver via REPL!"
   [& args]
   (println "Hello, World!"))
 
@@ -25,20 +25,6 @@
        (filter #(apply < %))
        (count)))
 
-(comment
-  (p1 "199
-200
-208
-210
-200
-207
-240
-269
-260
-263")
-  
-  (p1 (slurp "src/aoc2021/p1-input.txt")))
-
 (defn p1b [args]
   (->> args
        str/split-lines
@@ -48,21 +34,6 @@
        (map (fn [ts] (map #(apply + %) ts)))
        (filter #(apply < %))
        (count)))
-       
-
-(comment
-  (p1b "199
-200
-208
-210
-200
-207
-240
-269
-260
-263")
-
-  (p1b (slurp "src/aoc2021/p1-input.txt")))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;  Day 2
@@ -79,16 +50,6 @@
             "down"    (recur hori (+ depth val) (rest steps))
             "up"      (recur hori (- depth val) (rest steps)))))))
 
-(comment 
-  (p2 "forward 5
-down 5
-forward 8
-up 3
-down 8
-forward 2")
-
-  (p2 (slurp "src/aoc2021/p2-input.txt")))
-
 (defn p2b [args]
   (loop [hori 0 
          depth 0 
@@ -103,16 +64,6 @@ forward 2")
             "down"    (recur hori depth (+ aim val) (rest steps))
             "up"      (recur hori depth (- aim val) (rest steps)))))))
 
-(comment
-  (p2b "forward 5
-down 5
-forward 8
-up 3
-down 8
-forward 2")
-
-  (p2b (slurp "src/aoc2021/p2-input.txt")))
-
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;  Day 3
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -126,22 +77,6 @@ forward 2")
         gamma (->> max (apply str) (#(Integer/parseInt % 2)))
         epsilon (->> min (apply str) (#(Integer/parseInt % 2)))]
     (* gamma epsilon)))
-
-(comment
-  (p3 "00100
-11110
-10110
-10111
-10101
-01111
-00111
-11100
-10000
-11001
-00010
-01010")
-
-  (p3 (slurp "src/aoc2021/p3-input.txt")))
 
 (defn min-key-or-zero [m] (if (and (> (count (vals m)) 1) (apply = (vals m))) \0 (first (apply min-key val m))))
 (defn p3b [args]
@@ -169,20 +104,3 @@ forward 2")
                   (recur filtered (+ position 1)))))
         cos (->> cos (apply str) (#(Integer/parseInt % 2)))]
     (* oxy cos)))
-
-(comment
-  (apply max-key val {0 5 1 5})
-  (p3b "00100
-11110
-10110
-10111
-10101
-01111
-00111
-11100
-10000
-11001
-00010
-01010")
-
-  (p3b (slurp "src/aoc2021/p3-input.txt")))

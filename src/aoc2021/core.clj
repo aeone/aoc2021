@@ -1,6 +1,7 @@
 (ns aoc2021.core
   (:gen-class)
-  (:require [clojure.string :as str]))
+  (:require [clojure.string :as str]
+            [clojure.pprint :as pprint]))
 
 (defn -main
   "Run each puzzle solver via REPL!"
@@ -12,6 +13,9 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 (defn parse-int [x] (Integer/parseInt x))
+(defn pp [& args] (pprint/pprint args))
+(defn t> [x msg] (pprint/pprint [msg x]) x)
+(defn t>> [msg x] (pprint/pprint [msg x]) x)
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;  Day 1
@@ -104,3 +108,46 @@
                   (recur filtered (+ position 1)))))
         cos (->> cos (apply str) (#(Integer/parseInt % 2)))]
     (* oxy cos)))
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;  Day 4
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+(defn p4 [args]
+  (let [extract (str/split args #"\n\n")
+        [numbers & boards] extract
+        ;; _ (t>> "numbers1" numbers)
+        ;; _ (t>> "numbers1type" (type numbers))
+        numbers (map parse-int (str/split numbers #","))
+        ;; _ (t>> "numbers2" numbers)
+        board-convert (fn [b] (->> b
+                                   (str/split-lines)
+                                   (map str/trim)
+                                   (map (fn [s] (->> s
+                                                     (#(str/split % #"\s+"))
+                                                      ;; (t>> "board row")
+                                                     (map str/trim)
+                                                     (map parse-int))))))
+        boards (map board-convert boards)
+        ;; _ (t>> "boards" boards)
+        single-row-wins (fn [drawn row] (every? identity (map #(drawn %) row)))
+        board-row-wins (fn [drawn board] (some identity (map (partial single-row-wins drawn) board)))
+        board-wins (fn [drawn board] 
+                    ;;  (pp "drawn" drawn "board" board "inv-board" (apply mapv vector board)
+                    ;;      "board-row-wins" (board-row-wins drawn board) 
+                    ;;      "board-col-wins" (board-row-wins drawn (apply mapv vector board)))
+                     (or (board-row-wins drawn board) (board-row-wins drawn (apply mapv vector board))))
+        get-unmarked (fn [drawn board] (->> board (flatten) (filter #(not (drawn %)))))
+        ;; _ (t>> "board wins" (board-wins (set numbers) (first boards)))
+        ]
+    (loop [drawn (set [(first numbers)]) just-called (first numbers) remaining (rest numbers) boards boards]
+      (let [winning-boards (filter (partial board-wins drawn) boards)
+            ;; _ (pprint/pprint ["drawn" drawn "winning-boards" winning-boards])
+            [next-num & next-rem] remaining]
+        (if (>= (count winning-boards) 1)
+          (* just-called (apply + (get-unmarked drawn (first winning-boards))))
+          (recur (conj drawn next-num) next-num next-rem boards))))))
+
+(comment
+  (every? identity (map #(#{0 7 24 4 21 17 2 23 11 9 5 14} %) '(14 21 17 24 4)))
+  )

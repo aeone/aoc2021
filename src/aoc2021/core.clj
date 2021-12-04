@@ -21,7 +21,7 @@
 ;;  Day 1
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-(defn p1 [args]
+(defn day1 [args]
   (->> args
        str/split-lines
        (map parse-int)
@@ -29,7 +29,7 @@
        (filter #(apply < %))
        (count)))
 
-(defn p1b [args]
+(defn day1b [args]
   (->> args
        str/split-lines
        (map parse-int)
@@ -43,7 +43,7 @@
 ;;  Day 2
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-(defn p2 [args]
+(defn day2 [args]
   (loop [hori 0 depth 0 steps (str/split-lines args)]
     (if (empty? steps) (* hori depth)
         (let [step (first steps)
@@ -54,11 +54,8 @@
             "down"    (recur hori (+ depth val) (rest steps))
             "up"      (recur hori (- depth val) (rest steps)))))))
 
-(defn p2b [args]
-  (loop [hori 0 
-         depth 0 
-         aim 0 
-         steps (str/split-lines args)]
+(defn day2b [args]
+  (loop [hori 0 depth 0 aim 0 steps (str/split-lines args)]
     (if (empty? steps) (* hori depth)
         (let [step (first steps)
               [ins val] (str/split step #" ")
@@ -72,7 +69,7 @@
 ;;  Day 3
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-(defn p3 [args]
+(defn day3 [args]
   (let [rows (str/split-lines args)
         transposed (apply mapv vector rows)
         common (map frequencies transposed)
@@ -83,7 +80,7 @@
     (* gamma epsilon)))
 
 (defn min-key-or-zero [m] (if (and (> (count (vals m)) 1) (apply = (vals m))) \0 (first (apply min-key val m))))
-(defn p3b [args]
+(defn day3b [args]
   (let [rows (str/split-lines args)
         oxy (loop [inputs rows
                    position 0]
@@ -113,7 +110,7 @@
 ;;  Day 4
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-(defn p4 [args]
+(defn day4 [args]
   (let [extract (str/split args #"\n\n")
         [numbers & boards] extract
         numbers (map parse-int (str/split numbers #","))
@@ -122,13 +119,12 @@
                                    (map str/trim)
                                    (map (fn [s] (->> s
                                                      (#(str/split % #"\s+"))
-                                                     (map str/trim)
                                                      (map parse-int))))))
         boards (map board-convert boards)
         single-row-wins (fn [drawn row] (every? identity (map #(drawn %) row)))
         board-row-wins (fn [drawn board] (some identity (map (partial single-row-wins drawn) board)))
-        board-wins (fn [drawn board]
-                     (or (board-row-wins drawn board) (board-row-wins drawn (apply mapv vector board))))
+        board-wins (fn [drawn board] (or (board-row-wins drawn board) 
+                                         (board-row-wins drawn (apply mapv vector board))))
         get-unmarked (fn [drawn board] (->> board (flatten) (filter #(not (drawn %)))))]
     (loop [drawn (set [(first numbers)]) just-called (first numbers) remaining (rest numbers) boards boards]
       (let [winning-boards (filter (partial board-wins drawn) boards)
@@ -137,7 +133,7 @@
           (* just-called (apply + (get-unmarked drawn (first winning-boards))))
           (recur (conj drawn next-num) next-num next-rem boards))))))
 
-(defn p4b [args]
+(defn day4b [args]
   (let [extract (str/split args #"\n\n")
         [numbers & boards] extract
         numbers (map parse-int (str/split numbers #","))
@@ -146,17 +142,15 @@
                                    (map str/trim)
                                    (map (fn [s] (->> s
                                                      (#(str/split % #"\s+"))
-                                                     (map str/trim)
                                                      (map parse-int))))))
         boards (map board-convert boards)
         single-row-wins (fn [drawn row] (every? identity (map #(drawn %) row)))
         board-row-wins (fn [drawn board] (some identity (map (partial single-row-wins drawn) board)))
-        board-wins (fn [drawn board]
-                     (or (board-row-wins drawn board) (board-row-wins drawn (apply mapv vector board))))
+        board-wins (fn [drawn board] (or (board-row-wins drawn board) 
+                                         (board-row-wins drawn (apply mapv vector board))))
         get-unmarked (fn [drawn board] (->> board (flatten) (filter #(not (drawn %)))))]
     (loop [drawn (set [(first numbers)]) just-called (first numbers) remaining (rest numbers) boards boards]
       (let [losing-boards (filter #(not (board-wins drawn %)) boards)
-            ;; _ (pp "just-called" just-called "drawn" drawn "losing-boards" losing-boards)
             [next-num & next-rem] remaining]
         (if (= (count losing-boards) 0)
           (* just-called (apply + (get-unmarked drawn (first boards))))

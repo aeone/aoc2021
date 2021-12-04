@@ -6,10 +6,10 @@
 ;;  Day 1
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-(deftest day1a
+(deftest day1-test
   (testing "Day 1 sample input"
     (is (= 7 
-           (p1 "199
+           (day1 "199
 200
 208
 210
@@ -21,12 +21,12 @@
 263")))))
 
 (comment
-  (p1 (slurp "src/aoc2021/p1-input.txt")))
+  (day1 (slurp "src/aoc2021/day1-input.txt")))
 
-(deftest day1b
+(deftest day1b-test
   (testing "Day 1b sample input"
     (is (= 5 
-           (p1b "199
+           (day1b "199
 200
 208
 210
@@ -38,16 +38,16 @@
 263")))))
 
 (comment
-  (p1b (slurp "src/aoc2021/p1-input.txt")))
+  (day1b (slurp "src/aoc2021/day1-input.txt")))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;  Day 2
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-(deftest day2
+(deftest day2-test
   (testing "Day 2 sample input"
     (is (= 150 
-           (p2 "forward 5
+           (day2 "forward 5
 down 5
 forward 8
 up 3
@@ -55,12 +55,12 @@ down 8
 forward 2")))))
 
 (comment
-  (p2 (slurp "src/aoc2021/p2-input.txt")))
+  (day2 (slurp "src/aoc2021/day2-input.txt")))
 
-(deftest day2b
+(deftest day2b-test
   (testing "Day 2b sample input"
     (is (= 900 
-           (p2b "forward 5
+           (day2b "forward 5
 down 5
 forward 8
 up 3
@@ -68,16 +68,16 @@ down 8
 forward 2")))))
 
 (comment
-  (p2b (slurp "src/aoc2021/p2-input.txt")))
+  (day2b (slurp "src/aoc2021/day2-input.txt")))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;  Day 3
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-(deftest day3
+(deftest day3-test
   (testing "Day 3 sample input"
     (is (= 198
-           (p3 "00100
+           (day3 "00100
 11110
 10110
 10111
@@ -91,12 +91,12 @@ forward 2")))))
 01010")))))
 
 (comment
-  (p3 (slurp "src/aoc2021/p3-input.txt")))
+  (day3 (slurp "src/aoc2021/day3-input.txt")))
 
-(deftest day3b
+(deftest day3b-test
   (testing "Day 3b sample input"
     (is (= 230
-           (p3b "00100
+           (day3b "00100
 11110
 10110
 10111
@@ -111,16 +111,16 @@ forward 2")))))
 
 (comment
   (apply max-key val {0 5 1 5})
-  (p3b (slurp "src/aoc2021/p3-input.txt")))
+  (day3b (slurp "src/aoc2021/day3-input.txt")))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;  Day 4
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-(deftest day4
+(deftest day4-test
   (testing "Day 4 sample input"
     (is (= 4512
-           (p4 "7,4,9,5,11,17,23,2,0,14,21,24,10,16,13,6,15,25,12,22,18,20,8,19,3,26,1
+           (day4 "7,4,9,5,11,17,23,2,0,14,21,24,10,16,13,6,15,25,12,22,18,20,8,19,3,26,1
 
 22 13 17 11  0
  8  2 23  4 24
@@ -141,12 +141,12 @@ forward 2")))))
  2  0 12  3  7")))))
 
 (comment
-  (p4 (slurp "src/aoc2021/day4-input.txt")))
+  (day4 (slurp "src/aoc2021/day4-input.txt")))
 
-(deftest day4b
+(deftest day4b-test
   (testing "Day 4b sample input"
     (is (= 1924
-           (p4b "7,4,9,5,11,17,23,2,0,14,21,24,10,16,13,6,15,25,12,22,18,20,8,19,3,26,1
+           (day4b "7,4,9,5,11,17,23,2,0,14,21,24,10,16,13,6,15,25,12,22,18,20,8,19,3,26,1
 
 22 13 17 11  0
  8  2 23  4 24
@@ -167,4 +167,4 @@ forward 2")))))
  2  0 12  3  7")))))
 
 (comment
-  (p4b (slurp "src/aoc2021/day4-input.txt")))
+  (day4b (slurp "src/aoc2021/day4-input.txt")))

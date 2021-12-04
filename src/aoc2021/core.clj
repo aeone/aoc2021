@@ -116,38 +116,48 @@
 (defn p4 [args]
   (let [extract (str/split args #"\n\n")
         [numbers & boards] extract
-        ;; _ (t>> "numbers1" numbers)
-        ;; _ (t>> "numbers1type" (type numbers))
         numbers (map parse-int (str/split numbers #","))
-        ;; _ (t>> "numbers2" numbers)
         board-convert (fn [b] (->> b
                                    (str/split-lines)
                                    (map str/trim)
                                    (map (fn [s] (->> s
                                                      (#(str/split % #"\s+"))
-                                                      ;; (t>> "board row")
                                                      (map str/trim)
                                                      (map parse-int))))))
         boards (map board-convert boards)
-        ;; _ (t>> "boards" boards)
         single-row-wins (fn [drawn row] (every? identity (map #(drawn %) row)))
         board-row-wins (fn [drawn board] (some identity (map (partial single-row-wins drawn) board)))
-        board-wins (fn [drawn board] 
-                    ;;  (pp "drawn" drawn "board" board "inv-board" (apply mapv vector board)
-                    ;;      "board-row-wins" (board-row-wins drawn board) 
-                    ;;      "board-col-wins" (board-row-wins drawn (apply mapv vector board)))
+        board-wins (fn [drawn board]
                      (or (board-row-wins drawn board) (board-row-wins drawn (apply mapv vector board))))
-        get-unmarked (fn [drawn board] (->> board (flatten) (filter #(not (drawn %)))))
-        ;; _ (t>> "board wins" (board-wins (set numbers) (first boards)))
-        ]
+        get-unmarked (fn [drawn board] (->> board (flatten) (filter #(not (drawn %)))))]
     (loop [drawn (set [(first numbers)]) just-called (first numbers) remaining (rest numbers) boards boards]
       (let [winning-boards (filter (partial board-wins drawn) boards)
-            ;; _ (pprint/pprint ["drawn" drawn "winning-boards" winning-boards])
             [next-num & next-rem] remaining]
         (if (>= (count winning-boards) 1)
           (* just-called (apply + (get-unmarked drawn (first winning-boards))))
           (recur (conj drawn next-num) next-num next-rem boards))))))
 
-(comment
-  (every? identity (map #(#{0 7 24 4 21 17 2 23 11 9 5 14} %) '(14 21 17 24 4)))
-  )
+(defn p4b [args]
+  (let [extract (str/split args #"\n\n")
+        [numbers & boards] extract
+        numbers (map parse-int (str/split numbers #","))
+        board-convert (fn [b] (->> b
+                                   (str/split-lines)
+                                   (map str/trim)
+                                   (map (fn [s] (->> s
+                                                     (#(str/split % #"\s+"))
+                                                     (map str/trim)
+                                                     (map parse-int))))))
+        boards (map board-convert boards)
+        single-row-wins (fn [drawn row] (every? identity (map #(drawn %) row)))
+        board-row-wins (fn [drawn board] (some identity (map (partial single-row-wins drawn) board)))
+        board-wins (fn [drawn board]
+                     (or (board-row-wins drawn board) (board-row-wins drawn (apply mapv vector board))))
+        get-unmarked (fn [drawn board] (->> board (flatten) (filter #(not (drawn %)))))]
+    (loop [drawn (set [(first numbers)]) just-called (first numbers) remaining (rest numbers) boards boards]
+      (let [losing-boards (filter #(not (board-wins drawn %)) boards)
+            ;; _ (pp "just-called" just-called "drawn" drawn "losing-boards" losing-boards)
+            [next-num & next-rem] remaining]
+        (if (= (count losing-boards) 0)
+          (* just-called (apply + (get-unmarked drawn (first boards))))
+          (recur (conj drawn next-num) next-num next-rem losing-boards))))))

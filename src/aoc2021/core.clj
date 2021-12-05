@@ -13,6 +13,7 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 (defn parse-int [x] (Integer/parseInt x))
+(defn abs [x] (Math/abs x))
 (defn pp [& args] (pprint/pprint args))
 (defn t> [x msg] (pprint/pprint [msg x]) x)
 (defn t>> [msg x] (pprint/pprint [msg x]) x)
@@ -160,20 +161,32 @@
 ;;  Day 5
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-(defn inclusive-range [x y] (range (min x y) (inc (max x y))))
+(defn inclusive-range [x y] (range x (if (> y x) (inc y) (dec y)) (if (> y x) 1 -1)))
+(defn coord-range [x1 y1 x2 y2]
+                  (let [size (inc (max (abs (- x1 x2)) (abs (- y1 y2))))
+                        xs (->> (inclusive-range x1 x2) cycle (take size))
+                        ys (->> (inclusive-range y1 y2) cycle (take size))]
+                    (for [[x y] (map vector xs ys)] [x y])))
+
 (defn day5 [args]
   (let [extract (str/split-lines args)
         pairs (map #(->> % (re-find #"(\d+),(\d+) -> (\d+),(\d+)") (drop 1)) extract)
         pairs (map (fn [x] (map parse-int x)) pairs)
         points (for [[x1 y1 x2 y2] pairs
                      :when (or (= x1 x2) (= y1 y2))
-                     x (inclusive-range x1 x2)
-                     y (inclusive-range y1 y2)]
-                 (do 
-                  ;;  (pp [[x y] x1 y1 x2 y2])
-                     [x y]))
-        ;; _ (pp points)
+                     [x y] (coord-range x1 y1 x2 y2)]
+                 [x y])
         freqs (frequencies points)
-        ;; _ (pp freqs)
+        overlap (->> freqs vals (filter #(> % 1)) count)]
+    overlap))
+
+(defn day5b [args]
+  (let [extract (str/split-lines args)
+        pairs (map #(->> % (re-find #"(\d+),(\d+) -> (\d+),(\d+)") (drop 1)) extract)
+        pairs (map (fn [x] (map parse-int x)) pairs)
+        points (for [[x1 y1 x2 y2] pairs
+                     [x y] (coord-range x1 y1 x2 y2)]
+                 [x y])
+        freqs (frequencies points)
         overlap (->> freqs vals (filter #(> % 1)) count)]
     overlap))

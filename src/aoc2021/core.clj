@@ -155,3 +155,25 @@
         (if (= (count losing-boards) 0)
           (* just-called (apply + (get-unmarked drawn (first boards))))
           (recur (conj drawn next-num) next-num next-rem losing-boards))))))
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;  Day 5
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+(defn inclusive-range [x y] (range (min x y) (inc (max x y))))
+(defn day5 [args]
+  (let [extract (str/split-lines args)
+        pairs (map #(->> % (re-find #"(\d+),(\d+) -> (\d+),(\d+)") (drop 1)) extract)
+        pairs (map (fn [x] (map parse-int x)) pairs)
+        points (for [[x1 y1 x2 y2] pairs
+                     :when (or (= x1 x2) (= y1 y2))
+                     x (inclusive-range x1 x2)
+                     y (inclusive-range y1 y2)]
+                 (do 
+                  ;;  (pp [[x y] x1 y1 x2 y2])
+                     [x y]))
+        ;; _ (pp points)
+        freqs (frequencies points)
+        ;; _ (pp freqs)
+        overlap (->> freqs vals (filter #(> % 1)) count)]
+    overlap))

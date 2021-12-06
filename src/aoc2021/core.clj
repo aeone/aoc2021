@@ -184,3 +184,27 @@
         freqs (frequencies points)
         overlap (->> freqs vals (filter #(> % 1)) count)]
        overlap))
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;  Day 6
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+(defn map-val-add [m k v] (+ (or (m k) 0) v))
+(defn day6 [args]
+  (let [fish (->> args (#(str/split % #",")) (map parse-int))]
+       (loop [fish fish day 1]
+             (let [new-fish (mapcat #(if (= % 0) [6 8] [(dec %)]) fish)]
+                  (if (= day 80)
+                      (->> new-fish count)
+                      (recur new-fish (+ day 1)))))))
+
+(defn day6b [args]
+  (let [fish (->> args (#(str/split % #",")) (map parse-int) frequencies)]
+    (loop [fish fish day 1]
+      (let [new-fish (reduce (fn [acc [k v]] (if (= k 0)
+                                                 (conj acc {6 (map-val-add acc 6 v)} {8 v})
+                                                 (conj acc {(dec k) (map-val-add acc (dec k) v)}))) 
+                             {} fish)]
+        (if (= day 256)
+          (->> new-fish vals (reduce +))
+          (recur new-fish (+ day 1)))))))

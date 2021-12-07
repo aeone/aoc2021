@@ -213,8 +213,6 @@
 ;;  Day 7
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-;; (def triangle (memoize (fn [n] (if (<= n 0) 0 (+ n (recur (- n 1)))))))
-;; (def triangle (memoize (fn [n] (/ (* n (inc n)) 2))))
 (defn triangle [n] (/ (* n (inc n)) 2))
 (defn day7 [args] 
   (let [positions (->> args (#(str/split % #",")) (map parse-int))

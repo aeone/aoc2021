@@ -226,3 +226,23 @@ forward 2")))))
 
 (comment
   (day6b (slurp "src/aoc2021/day6-input.txt")))
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;  Day 7
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+(deftest day7-test
+  (testing "Day 7 sample input"
+    (is (= 37
+           (day7 "16,1,2,0,4,2,7,1,2,14")))))
+
+(comment
+  (day7 (slurp "src/aoc2021/day7-input.txt")))
+
+(deftest day7b-test
+  (testing "Day 7b sample input"
+    (is (= 168
+           (day7b "16,1,2,0,4,2,7,1,2,14")))))
+
+(comment
+  (time (day7b (slurp "src/aoc2021/day7-input.txt"))))

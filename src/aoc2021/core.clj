@@ -205,6 +205,29 @@
                                                  (conj acc {6 (map-val-add acc 6 v)} {8 v})
                                                  (conj acc {(dec k) (map-val-add acc (dec k) v)}))) 
                              {} fish)]
-        (if (= day 256)
-          (->> new-fish vals (reduce +))
-          (recur new-fish (+ day 1)))))))
+           (if (= day 256)
+               (->> new-fish vals (reduce +))
+               (recur new-fish (+ day 1)))))))
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;  Day 7
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+;; (def triangle (memoize (fn [n] (if (<= n 0) 0 (+ n (recur (- n 1)))))))
+;; (def triangle (memoize (fn [n] (/ (* n (inc n)) 2))))
+(defn triangle [n] (/ (* n (inc n)) 2))
+(defn day7 [args] 
+  (let [positions (->> args (#(str/split % #",")) (map parse-int))
+        min-pos (apply min positions)
+        max-pos (apply max positions)
+        fuel-spend (map (fn [cpos] (->> positions (map #(abs (- % cpos))) (reduce +)))
+                        (range min-pos (inc max-pos)))]
+    (apply min fuel-spend)))
+
+(defn day7b [args]
+  (let [positions (->> args (#(str/split % #",")) (map parse-int))
+        min-pos (apply min positions)
+        max-pos (apply max positions)
+        fuel-spend (map (fn [cpos] (->> positions (map #(triangle (abs (- % cpos)))) (reduce +)))
+                        (range min-pos (inc max-pos)))]
+    (apply min fuel-spend)))

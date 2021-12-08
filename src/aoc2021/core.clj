@@ -144,7 +144,7 @@
         board-row-wins (fn [drawn board] (some identity (map (partial single-row-wins drawn) board)))
         board-wins (fn [drawn board] (or (board-row-wins drawn board) 
                                          (board-row-wins drawn (apply mapv vector board))))
-        get-unmarked (fn [drawn board] (->> board (flatten) (filter #(not (drawn %)))))]
+        get-unmarked (fn [drawn board] (->> board flatten (filter #(not (drawn %)))))]
        (loop [drawn (set [(first numbers)]) just-called (first numbers) remaining (rest numbers) boards boards]
              (let [losing-boards (filter #(not (board-wins drawn %)) boards)
                    [next-num & next-rem] remaining]
@@ -219,7 +219,7 @@
   (let [positions (->> args (#(str/split % #",")) (map parse-int))
         min-pos (apply min positions)
         max-pos (apply max positions)
-        fuel-spend (map (fn [cpos] (->> positions (map #(abs (- % cpos))) (reduce +)))
+        fuel-spend (map (fn [candidate-pos] (->> positions (map #(abs (- % candidate-pos))) (reduce +)))
                         (range min-pos (inc max-pos)))]
     (apply min fuel-spend)))
 
@@ -227,7 +227,9 @@
   (let [positions (->> args (#(str/split % #",")) (map parse-int))
         min-pos (apply min positions)
         max-pos (apply max positions)
-        fuel-spend (map (fn [cpos] (->> positions (map #(triangle (abs (- % cpos)))) (reduce +)))
+        fuel-spend (map (fn [candidate-pos] (->> positions 
+                                                 (map #(triangle (abs (- % candidate-pos)))) 
+                                                 (reduce +)))
                         (range min-pos (inc max-pos)))]
     (apply min fuel-spend)))
 
@@ -239,25 +241,27 @@
   (let [parse-so-line (fn [l] (->> l
                                    (#(str/split % #" \| "))
                                    (map #(str/split % #" "))
-                                   ((fn [[s o]] [(set s) o]))))
-        sigs-and-outs (->> args (str/split-lines) (map parse-so-line))]
-    (->> sigs-and-outs (map second) (map seq) flatten (map count) (filter #{2 3 4 7}) count)))
+                                   ((fn [[_ output-vals]] output-vals))))
+        output-vals-list (->> args (str/split-lines) (map parse-so-line))]
+       (->> output-vals-list (map seq) flatten (map count) (filter #{2 3 4 7}) count)))
 
 (defn day8b [args]
   (let [parse-so-line (fn [l] (->> l
                                    (#(str/split % #" \| "))
                                    (map #(str/split % #" "))
-                                   ((fn [[s o]] [(map set s) o]))))
+                                   ((fn [[signals output-vals]] [(map set signals) output-vals]))))
         sigs-and-outs (->> args (str/split-lines) (map parse-so-line))
-        decipher (fn [[ss os]]
-                     (let [by-size (group-by count ss)
-                           a (set/difference (first (by-size 3)) (first (by-size 2)))
-                           d (apply set/intersection (first (by-size 4)) (by-size 5))
-                           f (apply set/intersection (first (by-size 2)) (by-size 6))
-                           c (set/difference (first (by-size 2)) f)
-                           b (set/difference (first (by-size 4)) c d f)
-                           g (set/difference (apply set/intersection (by-size 6)) a b f)
-                           e (set/difference (first (by-size 7)) a b c d f g)
+        decipher (fn [[signals output-vals]]
+                     (let [by-size (group-by count signals)
+                           [seg-2 seg-3 seg-4 seg-7] (->> [2 3 4 7] (map by-size) (map first))
+                           [segs-5 segs-6] (->> [5 6] (map by-size))
+                           a (set/difference seg-3 seg-2)
+                           d (apply set/intersection seg-4 segs-5)
+                           f (apply set/intersection seg-2 segs-6)
+                           c (set/difference seg-2 f)
+                           b (set/difference seg-4 c d f)
+                           g (set/difference (apply set/intersection segs-6) a b f)
+                           e (set/difference seg-7 a b c d f g)
                            segments {(set/union a b c e f g)   0 
                                      (set/union c f)           1 
                                      (set/union a c d e g)     2 
@@ -269,5 +273,5 @@
                                      (set/union a b c d e f g) 8 
                                      (set/union a b c d f g)   9}
                            dec-output (fn [o] (-> o set segments))]
-                       (->> os (map dec-output) (apply str) parse-int)))]
+                       (->> output-vals (map dec-output) (apply str) parse-int)))]
        (->> sigs-and-outs (map decipher) (reduce +))))

@@ -1,7 +1,8 @@
 (ns aoc2021.core
   (:gen-class)
   (:require [clojure.string :as str]
-            [clojure.pprint :as pprint]))
+            [clojure.pprint :as pprint]
+            [clojure.set :as set]))
 
 (defn -main
   "Run each puzzle solver via REPL!"
@@ -229,3 +230,44 @@
         fuel-spend (map (fn [cpos] (->> positions (map #(triangle (abs (- % cpos)))) (reduce +)))
                         (range min-pos (inc max-pos)))]
     (apply min fuel-spend)))
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;  Day 8
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+(defn day8 [args]
+  (let [parse-so-line (fn [l] (->> l
+                                   (#(str/split % #" \| "))
+                                   (map #(str/split % #" "))
+                                   ((fn [[s o]] [(set s) o]))))
+        sigs-and-outs (->> args (str/split-lines) (map parse-so-line))]
+    (->> sigs-and-outs (map second) (map seq) flatten (map count) (filter #{2 3 4 7}) count)))
+
+(defn day8b [args]
+  (let [parse-so-line (fn [l] (->> l
+                                   (#(str/split % #" \| "))
+                                   (map #(str/split % #" "))
+                                   ((fn [[s o]] [(map set s) o]))))
+        sigs-and-outs (->> args (str/split-lines) (map parse-so-line))
+        decipher (fn [[ss os]]
+                     (let [by-size (group-by count ss)
+                           a (set/difference (first (by-size 3)) (first (by-size 2)))
+                           d (apply set/intersection (first (by-size 4)) (by-size 5))
+                           f (apply set/intersection (first (by-size 2)) (by-size 6))
+                           c (set/difference (first (by-size 2)) f)
+                           b (set/difference (first (by-size 4)) c d f)
+                           g (set/difference (apply set/intersection (by-size 6)) a b f)
+                           e (set/difference (first (by-size 7)) a b c d f g)
+                           segments {(set/union a b c e f g)   0 
+                                     (set/union c f)           1 
+                                     (set/union a c d e g)     2 
+                                     (set/union a c d f g)     3 
+                                     (set/union b c d f)       4 
+                                     (set/union a b d f g)     5 
+                                     (set/union a b d e f g)   6 
+                                     (set/union a c f)         7 
+                                     (set/union a b c d e f g) 8 
+                                     (set/union a b c d f g)   9}
+                           dec-output (fn [o] (-> o set segments))]
+                       (->> os (map dec-output) (apply str) parse-int)))]
+       (->> sigs-and-outs (map decipher) (reduce +))))

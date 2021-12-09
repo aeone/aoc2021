@@ -16,6 +16,7 @@
 (defn parse-int ([x] (Integer/parseInt x))
                 ([x y] (Integer/parseInt x y)))
 (defn abs [x] (Math/abs x))
+(defn uuid [] (.toString (java.util.UUID/randomUUID)))
 (defn pp [& args] (pprint/pprint args))
 (defn t> [x msg] (pprint/pprint [msg x]) x)
 (defn t>> [msg x] (pprint/pprint [msg x]) x)
@@ -275,3 +276,47 @@
                            dec-output (fn [o] (-> o set segments))]
                        (->> output-vals (map dec-output) (apply str) parse-int)))]
        (->> sigs-and-outs (map decipher) (reduce +))))
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;  Day 9
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+(defn day9 [args]
+  (let [lines (->> args str/split-lines (map (fn [l] (vec (map #(Character/digit % 10) l)))) vec)
+        x-size (count (first lines))
+        y-size (count lines)
+        adjacent (reduce (fn [acc [x y]] (let [line (nth lines y)
+                                               n (nth line x)
+                                               adj [(get line (dec x))
+                                                    (get line (inc x))
+                                                    (get (get lines (inc y)) x)
+                                                    (get (get lines (dec y)) x)]
+                                               adj (filter identity adj)]
+                                           (conj acc [n adj])))
+                         []
+                         (for [x (range x-size) y (range y-size)] [x y]))
+        lowest (filter (fn [[n adj]] (every? (partial < n) adj)) adjacent)]
+    (reduce (fn [acc [n _]] (+ acc (inc n))) 0 lowest)))
+
+(defn day9b [args]
+  (let [lines (->> args str/split-lines (map (fn [l] (vec (map #(Character/digit % 10) l)))) vec)
+        x-size (count (first lines))
+        y-size (count lines)
+        basins (reduce (fn [acc [x y]] (let [line (nth lines y)
+                                             n (nth line x)
+                                             adj [[[(dec x) y] (get line (dec x))]
+                                                  [[(inc x) y] (get line (inc x))]
+                                                  [[x (inc y)] (get (get lines (inc y)) x)]
+                                                  [[x (dec y)] (get (get lines (dec y)) x)]]
+                                             adj (->> adj 
+                                                      (filter second) 
+                                                      (filter #(not= 9 (second %))) 
+                                                      (map first))
+                                             unrelated-basins (filter #(not-any? % adj) acc)
+                                             related-basins (filter #(some % adj) acc)]
+                                            (cond (= 9 n) acc
+                                                  (empty? related-basins) (conj acc #{[x y]})
+                                                  :else (conj unrelated-basins (apply set/union #{[x y]} related-basins)))))
+                         []
+                         (for [x (range x-size) y (range y-size)] [x y]))]
+       (->> basins (map count) sort reverse (take 3) (reduce *))))

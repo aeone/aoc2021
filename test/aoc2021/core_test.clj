@@ -284,3 +284,31 @@ gcafb gcf dcaebfg ecagb gf abcdeg gaef cafbge fdbac fegbdc | fgae cfgab fg bagce
 
 (comment
   (time (day8b (slurp "src/aoc2021/day8-input.txt"))))
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;  Day 9
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+(deftest day9-test
+  (testing "Day 9 sample input"
+    (is (= 15
+           (day9 "2199943210
+3987894921
+9856789892
+8767896789
+9899965678")))))
+
+(comment
+  (time (day9 (slurp "src/aoc2021/day9-input.txt"))))
+
+(deftest day9b-test
+  (testing "Day 9b sample input"
+    (is (= 1134
+           (day9b "2199943210
+3987894921
+9856789892
+8767896789
+9899965678")))))
+
+(comment
+  (time (day9b (slurp "src/aoc2021/day9-input.txt"))))

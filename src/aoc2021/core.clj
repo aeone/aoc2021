@@ -333,17 +333,18 @@
         char-score {\) 3 \] 57 \} 1197 \> 25137}
         open-brackets (set "([{<")
         close-brackets {\) \( \] \[ \} \{ \> \<}
-        get-illegal-char (fn [l] 
-                             (loop [stack [] input (-> l vec)]
-                                   (let [[char & rest] input
-                                         valid-terminating-line (and (nil? char) (empty? stack))
-                                         char-opens-bracket     (open-brackets char)
-                                         char-closes-bracket    (and (close-brackets char)
-                                                                     (= (close-brackets char) (peek stack)))]
-                                        (cond valid-terminating-line nil
-                                              char-opens-bracket     (recur (conj stack char) rest)
-                                              char-closes-bracket    (recur (pop stack) rest)
-                                              :else                  (char-score char)))))]
+        get-illegal-char (fn get-illegal-char
+                             ([line] (get-illegal-char [] (-> line vec))) 
+                             ([stack input]
+                              (let [[char & rest-of-chars] input
+                                    valid-terminating-line (and (nil? char) (empty? stack))
+                                    char-opens-bracket     (open-brackets char)
+                                    char-closes-bracket    (and (close-brackets char)
+                                                                (= (close-brackets char) (peek stack)))]
+                                   (cond valid-terminating-line nil
+                                         char-opens-bracket     (recur (conj stack char) rest-of-chars)
+                                         char-closes-bracket    (recur (pop stack) rest-of-chars)
+                                         :else                  (char-score char)))))]
        (->> lines (map get-illegal-char) (filter identity) (reduce +))))
 
 (defn day10b [args] 
@@ -352,17 +353,18 @@
         open-brackets (set "([{<")
         close-brackets {\) \( \] \[ \} \{ \> \<}
         calc-score (fn [rem-chars] (reduce (fn [acc n] (+ (* 5 acc) (char-score n))) 0 rem-chars))
-        get-line-score (fn [l]
-                           (loop [stack [] input (-> l vec)]
-                                 (let [[char & rest] input
-                                       valid-terminating-line (and (nil? char) (empty? stack))
-                                       incomplete-line        (and (nil? char) (seq stack))
-                                       char-opens-bracket     (open-brackets char)
-                                       char-closes-bracket    (and (close-brackets char)
-                                                                   (= (close-brackets char) (peek stack)))]
-                                      (cond valid-terminating-line nil
-                                            incomplete-line        (calc-score (reverse stack))
-                                            char-opens-bracket     (recur (conj stack char) rest)
-                                            char-closes-bracket    (recur (pop stack) rest)
-                                            :else                  nil))))]
-    (->> lines (map get-line-score) (filter identity) sort (#(nth % (quot (count %) 2))))))
+        get-line-score (fn score 
+                           ([line] (score [] (-> line vec)))
+                           ([stack input]
+                            (let [[char & rest-of-chars] input
+                                  valid-terminating-line (and (nil? char) (empty? stack))
+                                  incomplete-line        (and (nil? char) (seq stack))
+                                  char-opens-bracket     (open-brackets char)
+                                  char-closes-bracket    (and (close-brackets char)
+                                                              (= (close-brackets char) (peek stack)))]
+                                 (cond valid-terminating-line nil
+                                       incomplete-line        (calc-score (reverse stack))
+                                       char-opens-bracket     (recur (conj stack char) rest-of-chars)
+                                       char-closes-bracket    (recur (pop stack) rest-of-chars)
+                                       :else                  nil))))]
+       (->> lines (map get-line-score) (filter identity) sort (#(nth % (quot (count %) 2))))))

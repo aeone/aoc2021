@@ -288,12 +288,11 @@
   (let [lines (->> args str/split-lines (two-dimensional-mapv char-parse-int))
         x-size (count (first lines))
         y-size (count lines)
-        adjacent (reduce (fn [acc [x y]] (let [line (nth lines y)
-                                               n (nth line x)
-                                               adj [(get line (dec x))
-                                                    (get line (inc x))
-                                                    (get (get lines (inc y)) x)
-                                                    (get (get lines (dec y)) x)]
+        adjacent (reduce (fn [acc [x y]] (let [n (get-in lines [y x])
+                                               adj [(get-in lines [y (dec x)])
+                                                    (get-in lines [y (inc x)])
+                                                    (get-in lines [(inc y) x])
+                                                    (get-in lines [(dec y) x])]
                                                adj (filter identity adj)]
                                            (conj acc [n adj])))
                          []
@@ -324,3 +323,39 @@
                          []
                          (for [x (range x-size) y (range y-size)] [x y]))]
        (->> basins (map count) sort reverse (take 3) (reduce *))))
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;  Day 10
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+(defn day10 [args]
+  (let [lines (str/split-lines args)
+        char-score {\) 3 \] 57 \} 1197 \> 25137}
+        open-brackets (set "([{<")
+        close-brackets {\) \( \] \[ \} \{ \> \<}
+        get-illegal-char (fn [l] 
+                             (loop [stack [] input (-> l vec)]
+                                   (let [[char & rest] input]
+                                        (cond (and (nil? char) (empty? stack)) nil
+                                              (open-brackets char) (recur (conj stack char) rest)
+                                              (and (close-brackets char) 
+                                                   (= (close-brackets char) (peek stack))) (recur (pop stack) rest)
+                                              :else (char-score char)))))]
+       (->> lines (map get-illegal-char) (filter identity) (reduce +))))
+
+(defn day10b [args] 
+  (let [lines (str/split-lines args)
+        char-score {\( 1 \[ 2 \{ 3 \< 4}
+        open-brackets (set "([{<")
+        close-brackets {\) \( \] \[ \} \{ \> \<}
+        calc-score (fn [rem-chars] (reduce (fn [acc n] (+ (* 5 acc) (char-score n))) 0 rem-chars))
+        get-line-score (fn [l]
+                           (loop [stack [] input (-> l vec)]
+                                 (let [[char & rest] input]
+                                      (cond (and (nil? char) (empty? stack)) nil
+                                            (and (nil? char) (seq stack)) (calc-score (reverse stack))
+                                            (open-brackets char) (recur (conj stack char) rest)
+                                            (and (close-brackets char)
+                                                 (= (close-brackets char) (peek stack))) (recur (pop stack) rest)
+                                            :else nil))))]
+    (->> lines (map get-line-score) (filter identity) sort (#(nth % (quot (count %) 2))))))

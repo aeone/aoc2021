@@ -296,3 +296,34 @@ gcafb gcf dcaebfg ecagb gf abcdeg gaef cafbge fdbac fegbdc | fgae cfgab fg bagce
 
 (comment
   (time (day10b (slurp "src/aoc2021/day10-input.txt"))))
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;  Day 11
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+(def day11-sample-input "5483143223
+2745854711
+5264556173
+6141336146
+6357385478
+4167524645
+2176841721
+6882881134
+4846848554
+5283751526")
+
+(deftest day11-test
+  (testing "Day 11 sample input"
+    (is (= 1656
+           (day11 day11-sample-input)))))
+
+(comment
+  (time (day11 (slurp "src/aoc2021/day11-input.txt"))))
+
+(deftest day11b-test
+  (testing "Day 11b sample input"
+    (is (= 195
+           (day11b day11-sample-input)))))
+
+(comment
+  (time (day11b (slurp "src/aoc2021/day11-input.txt"))))

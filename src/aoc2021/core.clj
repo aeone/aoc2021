@@ -496,3 +496,43 @@
                            :else                  (recur (concat next-paths (rest current-paths)) routes))))]
        (->> (navigate [["start"]] []) count)))
 
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;  Day 13
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+(defn draw13 [dots] (let [max-x (->> dots (map first) (apply max))
+                          max-y (->> dots (map second) (apply max))]
+                         (for [y (inclusive-range max-y)
+                               x (inclusive-range max-x)
+                               :let [suff (if (= x max-x) "\n" "")]]
+                              (str (if (in? dots [x y]) "#" ".") suff))))
+(defn day13 [args]
+  (let [[dots folds] (-> args (str/split #"\n\n"))
+        dots         (->> dots (str/split-lines) (map #(str/split % #",")) (two-dimensional-mapv parse-int))
+        folds        (->> folds 
+                          (str/split-lines) 
+                          (map #(re-find #"fold along (.)=(\d+)" %)) 
+                          (map (fn [[_ fold-axis fold-val]] [fold-axis (parse-int fold-val)])))
+        fold-dot     (fn [fold-axis fold-val [x y]]
+                         (cond (and (= "x" fold-axis) (> x fold-val)) [(- (* 2 fold-val) x) y]
+                               (and (= "y" fold-axis) (> y fold-val)) [x (- (* 2 fold-val) y)]
+                               :else                                  [x y]))
+        fold         (fn [dots [fold-axis fold-val]]
+                         (map (partial fold-dot fold-axis fold-val) dots))
+        folds        [(first folds)]]
+       (->> (reduce fold dots folds) set sort count)))
+
+(defn day13b [args]
+  (let [[dots folds] (-> args (str/split #"\n\n"))
+        dots         (->> dots (str/split-lines) (map #(str/split % #",")) (two-dimensional-mapv parse-int))
+        folds        (->> folds 
+                          (str/split-lines) 
+                          (map #(re-find #"fold along (.)=(\d+)" %)) 
+                          (map (fn [[_ fold-axis fold-val]] [fold-axis (parse-int fold-val)])))
+        fold-dot     (fn [fold-axis fold-val [x y]]
+                         (cond (and (= "x" fold-axis) (> x fold-val)) [(- (* 2 fold-val) x) y]
+                               (and (= "y" fold-axis) (> y fold-val)) [x (- (* 2 fold-val) y)]
+                               :else                                  [x y]))
+        fold         (fn [dots [fold-axis fold-val]]
+                         (map (partial fold-dot fold-axis fold-val) dots))]
+       (->> (reduce fold dots folds) draw13 println)))

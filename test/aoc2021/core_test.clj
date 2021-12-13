@@ -374,3 +374,44 @@ start-RW"] 1))
 (comment
   (time (day12b (slurp "src/aoc2021/day12-input.txt"))))
 
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;  Day 13
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+(def day13-sample-input "6,10
+0,14
+9,10
+0,3
+10,4
+4,11
+6,0
+6,12
+4,1
+0,13
+10,12
+3,4
+3,0
+8,4
+1,10
+2,14
+8,10
+9,0
+
+fold along y=7
+fold along x=5")
+
+(deftest day13-test
+  (testing "Day 13 sample input"
+    (is (= 17
+           (day13 day13-sample-input)))))
+
+(comment
+  (time (day13 (slurp "src/aoc2021/day13-input.txt"))))
+
+(deftest day13b-test
+  (testing "Day 13b sample input"
+    (is (= nil
+           (day13b day13-sample-input)))))
+
+(comment
+  (time (day13b (slurp "src/aoc2021/day13-input.txt"))))

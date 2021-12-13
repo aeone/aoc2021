@@ -327,3 +327,50 @@ gcafb gcf dcaebfg ecagb gf abcdeg gaef cafbge fdbac fegbdc | fgae cfgab fg bagce
 
 (comment
   (time (day11b (slurp "src/aoc2021/day11-input.txt"))))
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;  Day 12
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+(def day12-sample-input (nth ["start-A
+start-b
+A-c
+A-b
+b-d
+A-end
+b-end",
+"fs-end
+he-DX
+fs-he
+start-DX
+pj-DX
+end-zg
+zg-sl
+zg-pj
+pj-he
+RW-he
+fs-DX
+pj-RW
+zg-RW
+start-pj
+he-WI
+zg-he
+pj-fs
+start-RW"] 1))
+
+(deftest day12-test
+  (testing "Day 12 sample input"
+    (is (= 226
+           (day12 day12-sample-input)))))
+
+(comment
+  (time (day12 (slurp "src/aoc2021/day12-input.txt"))))
+
+(deftest day12b-test
+  (testing "Day 12b sample input"
+    (is (= 3509
+           (day12b day12-sample-input)))))
+
+(comment
+  (time (day12b (slurp "src/aoc2021/day12-input.txt"))))
+

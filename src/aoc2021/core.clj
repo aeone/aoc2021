@@ -20,6 +20,11 @@
 (defn two-dimensional-mapv [f coll] (mapv #(mapv f %) coll))
 (defn abs [x] (Math/abs x))
 (defn uuid [] (.toString (java.util.UUID/randomUUID)))
+(defn in?
+  "true if coll contains elm"
+  [coll elm]
+  (some #(= elm %) coll))
+(def not-in? (complement in?))
 (defn pp [& args] (pprint/pprint args))
 (defn t> [x msg] (pprint/pprint [msg x]) x)
 (defn t>> [msg x] (pprint/pprint [msg x]) x)
@@ -435,4 +440,59 @@
                                       step)
                                  (inc steps))))]
        (run-steps grid 0)))
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;  Day 12
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+(defn day12 [args]
+  (let [connections (->> args 
+                         (str/split-lines) 
+                         (map #(str/split % #"-")) 
+                         (mapcat (fn [[a b]] [[a b] [b a]])) 
+                         (group-by first) 
+                         (map (fn [[a b]] [a (map second b)])))
+        get-next (fn [node] (->> connections (filter #(= (first %) node)) first second))
+        upper-case? #(= % (str/upper-case %))
+        valid-next (fn [visited next] (or (upper-case? next) 
+                                          (not-in? visited next)))
+        navigate (fn [current-paths routes]
+                     (let [current-path (first current-paths)
+                           current-node (last current-path)
+                           next-nodes (get-next current-node)
+                           next-nodes (filter (partial valid-next current-path) next-nodes)
+                           next-paths (map (partial conj current-path) next-nodes)]
+                          (cond (nil? current-path)    routes
+                                (= current-node "end") (recur (rest current-paths) (conj routes current-path))
+                                :else                  (recur (concat next-paths (rest current-paths)) routes))))]
+       (->> (navigate [["start"]] []) count)))
+
+(defn day12b [args]
+  (let [connections (->> args 
+                         (str/split-lines)
+                         (map #(str/split % #"-"))
+                         (mapcat (fn [[a b]] [[a b] [b a]]))
+                         (group-by first)
+                         (map (fn [[a b]] [a (map second b)])))
+        get-next (fn [node] (->> connections (filter #(= (first %) node)) first second))
+        upper-case? #(= % (str/upper-case %))
+        lower-case? #(and ((complement upper-case?) %) ((complement #{"start" "end"}) %))
+        visited-small-cave-twice? (fn [visited] (->> visited
+                                                     (filter lower-case?)
+                                                     frequencies
+                                                     (some (fn [[_k v]] (> v 1)))))
+        valid-next (fn [visited next] (or (upper-case? next)
+                                          (not-in? visited next)
+                                          (and (lower-case? next) 
+                                               (not (visited-small-cave-twice? visited)))))
+        navigate (fn [current-paths routes]
+                     (let [current-path (first current-paths)
+                           current-node (last current-path)
+                           next-nodes   (get-next current-node)
+                           next-nodes   (filter (partial valid-next current-path) next-nodes)
+                           next-paths   (map (partial conj current-path) next-nodes)]
+                     (cond (nil? current-path)    routes
+                           (= current-node "end") (recur (rest current-paths) (conj routes current-path))
+                           :else                  (recur (concat next-paths (rest current-paths)) routes))))]
+       (->> (navigate [["start"]] []) count)))
 

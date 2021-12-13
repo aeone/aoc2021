@@ -506,6 +506,8 @@
                                x (inclusive-range max-x)
                                :let [suff (if (= x max-x) "\n" "")]]
                               (str (if (in? dots [x y]) "#" ".") suff))))
+(defn print13 [x] (when false (println x)) x)
+
 (defn day13 [args]
   (let [[dots folds] (-> args (str/split #"\n\n"))
         dots         (->> dots (str/split-lines) (map #(str/split % #",")) (two-dimensional-mapv parse-int))
@@ -520,7 +522,7 @@
         fold         (fn [dots [fold-axis fold-val]]
                          (map (partial fold-dot fold-axis fold-val) dots))
         folds        [(first folds)]]
-       (->> (reduce fold dots folds) set sort count)))
+       (->> (reduce fold dots folds) set count)))
 
 (defn day13b [args]
   (let [[dots folds] (-> args (str/split #"\n\n"))
@@ -535,4 +537,5 @@
                                :else                                  [x y]))
         fold         (fn [dots [fold-axis fold-val]]
                          (map (partial fold-dot fold-axis fold-val) dots))]
-       (->> (reduce fold dots folds) draw13 println)))
+       (->> (reduce fold dots folds) draw13 print13)))
+

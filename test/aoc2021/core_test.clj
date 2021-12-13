@@ -332,14 +332,14 @@ gcafb gcf dcaebfg ecagb gf abcdeg gaef cafbge fdbac fegbdc | fgae cfgab fg bagce
 ;;  Day 12
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-(def day12-sample-input (nth ["start-A
+(def day12-sample-input-1 "start-A
 start-b
 A-c
 A-b
 b-d
 A-end
-b-end",
-"fs-end
+b-end")
+(def day12-sample-input-2 "fs-end
 he-DX
 fs-he
 start-DX
@@ -356,20 +356,28 @@ start-pj
 he-WI
 zg-he
 pj-fs
-start-RW"] 1))
+start-RW")
 
-(deftest day12-test
-  (testing "Day 12 sample input"
+(deftest day12-test-1
+  (testing "Day 12 sample input 1"
+    (is (= 10
+           (day12 day12-sample-input-1)))))
+(deftest day12-test-2
+  (testing "Day 12 sample input 2"
     (is (= 226
-           (day12 day12-sample-input)))))
+           (day12 day12-sample-input-2)))))
 
 (comment
   (time (day12 (slurp "src/aoc2021/day12-input.txt"))))
 
-(deftest day12b-test
-  (testing "Day 12b sample input"
+(deftest day12b-test-1
+  (testing "Day 12b sample input 1"
+    (is (= 36
+           (day12b day12-sample-input-1)))))
+(deftest day12b-test-2
+  (testing "Day 12b sample input 2"
     (is (= 3509
-           (day12b day12-sample-input)))))
+           (day12b day12-sample-input-2)))))
 
 (comment
   (time (day12b (slurp "src/aoc2021/day12-input.txt"))))
@@ -410,7 +418,11 @@ fold along x=5")
 
 (deftest day13b-test
   (testing "Day 13b sample input"
-    (is (= nil
+    (is (= '("#" "#" "#" "#" "#\n" 
+             "#" "." "." "." "#\n" 
+             "#" "." "." "." "#\n" 
+             "#" "." "." "." "#\n" 
+             "#" "#" "#" "#" "#\n")
            (day13b day13-sample-input)))))
 
 (comment

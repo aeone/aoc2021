@@ -539,3 +539,38 @@
                          (map (partial fold-dot fold-axis fold-val) dots))]
        (->> (reduce fold dots folds) draw13 print13)))
 
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;  Day 14
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+(defn map-inc [m k] (update m k #(if (nil? %) 1 (inc %))))
+(defn map-val-assoc-add [m k v] (assoc m k (+ (or (m k) 0) v)))
+(defn day14 [args]
+  (let [[template rules] (-> args (str/split #"\n\n"))
+        rules (->> rules (str/split-lines) (map #(str/split % #" -> ")) flatten (apply hash-map))
+        step (fn [chain rules] 
+                 (let [pairs (map (partial apply str) (partition 2 1 chain))
+                       result (->> pairs (map #(str (first %) (rules %))) (apply str) (#(str % (last chain))))]
+                      result))
+        steps (fn [count chain rules]
+                  (if (zero? count) chain (recur (dec count) (step chain rules) rules)))]
+       (->> (steps 10 template rules) frequencies vals (#(- (apply max %) (apply min %))))))
+
+(defn day14b [args]
+  (let [[template rules] (-> args (str/split #"\n\n"))
+        rules (->> rules (str/split-lines) (map #(str/split % #" -> ")) flatten (apply hash-map))
+        pairs (frequencies (map (partial apply str) (partition 2 1 template)))
+        apply-pair (fn [pair pair-count counts rules] 
+                       (let [first-pair (str (first pair) (rules pair))
+                             second-pair (str (rules pair) (second pair))]
+                            (-> counts 
+                                (map-val-assoc-add first-pair pair-count)
+                                (map-val-assoc-add second-pair pair-count))))
+        step (fn [pair-count rules]
+                 (reduce (fn [acc [p c]] (apply-pair p c acc rules)) {} pair-count))
+        steps (fn [step-count pair-count rules]
+                  (if (zero? step-count) pair-count (recur (dec step-count) (step pair-count rules) rules)))
+        final (fn [pair-count] (->> pair-count 
+                                    (reduce (fn [acc [[p1 _] c]] (-> acc (map-val-assoc-add p1 c))) {}) 
+                                    (#(map-inc % (last template)))))]
+       (->> (steps 40 pairs rules) final vals (#(- (apply max %) (apply min %))))))

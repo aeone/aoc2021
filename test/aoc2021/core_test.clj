@@ -427,3 +427,42 @@ fold along x=5")
 
 (comment
   (time (day13b (slurp "src/aoc2021/day13-input.txt"))))
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;  Day 14
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+(def day14-sample-input "NNCB
+
+CH -> B
+HH -> N
+CB -> H
+NH -> C
+HB -> C
+HC -> B
+HN -> C
+NN -> C
+BH -> H
+NC -> B
+NB -> B
+BN -> B
+BB -> N
+BC -> B
+CC -> N
+CN -> C")
+
+(deftest day14-test
+  (testing "Day 14 sample input"
+    (is (= 1588
+           (day14 day14-sample-input)))))
+
+(comment
+  (time (day14 (slurp "src/aoc2021/day14-input.txt"))))
+
+(deftest day14b-test
+  (testing "Day 14b sample input"
+    (is (= 2188189693529
+           (day14b day14-sample-input)))))
+
+(comment
+  (time (day14b (slurp "src/aoc2021/day14-input.txt"))))

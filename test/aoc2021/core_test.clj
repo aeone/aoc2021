@@ -466,3 +466,34 @@ CN -> C")
 
 (comment
   (time (day14b (slurp "src/aoc2021/day14-input.txt"))))
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;  Day 15
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+(def day15-sample-input "1163751742
+1381373672
+2136511328
+3694931569
+7463417111
+1319128137
+1359912421
+3125421639
+1293138521
+2311944581")
+
+(deftest day15-test
+  (testing "Day 15 sample input"
+    (is (= 40
+           (day15 day15-sample-input)))))
+
+(comment
+  (time (day15 (slurp "src/aoc2021/day15-input.txt"))))
+
+(deftest day15b-test
+  (testing "Day 15b sample input"
+    (time (is (= 315
+                 (day15b day15-sample-input))))))
+
+(comment
+  (time (day15b (slurp "src/aoc2021/day15-input.txt"))))

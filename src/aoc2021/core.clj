@@ -2,7 +2,9 @@
   (:gen-class)
   (:require [clojure.string :as str]
             [clojure.pprint :as pprint]
-            [clojure.set :as set]))
+            [clojure.set :as set]
+            [clojure.core.reducers :as r]
+            [clojure.data.priority-map :refer [priority-map-keyfn]]))
 
 (defn -main
   "Run each puzzle solver via REPL!"
@@ -15,10 +17,10 @@
 
 (defn parse-int ([x] (Integer/parseInt x))
   ([x y] (Integer/parseInt x y)))
-(defn char-parse-int [x] (Character/digit x 10))
+(defn char-parse-int [^Character x] (Character/digit x 10))
 (defn two-dimensional-map [f coll] (map #(map f %) coll))
 (defn two-dimensional-mapv [f coll] (mapv #(mapv f %) coll))
-(defn abs [x] (Math/abs x))
+(defn abs [^Integer x] (Math/abs x))
 (defn uuid [] (.toString (java.util.UUID/randomUUID)))
 (defn in?
   "true if coll contains elm"
@@ -574,3 +576,51 @@
                                     (reduce (fn [acc [[p1 _] c]] (-> acc (map-val-assoc-add p1 c))) {}) 
                                     (#(map-inc % (last template)))))]
        (->> (steps 40 pairs rules) final vals (#(- (apply max %) (apply min %))))))
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;  Day 15
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+(defn get-neighbours [grid x y] 
+  (let [adj [[(dec x) y]
+             [(inc x) y]
+             [x (inc y)]
+             [x (dec y)]]
+        adj (map (fn [[x y]] [[x y] (get-in grid [y x])]) adj)
+        adj (filter second adj)]
+       adj))
+
+(defn get-neighbours-excluding-history [grid x y history] 
+  (->> (get-neighbours grid x y) (filter (fn [[node _]] (not (history node))))))
+
+(defn solve15 [grid]
+  (let [y-size (count grid)
+        x-size (count (first grid))
+        heuristic (fn [x y] (+ (- x-size x) (- y-size y)))
+        search (fn [paths grid]
+                   (let [[_ {:keys [x y route-cost route]}] (peek paths)
+                         rest (pop paths)
+                         end? (and (= x (dec x-size)) (= y (dec y-size)))
+                         new-paths (map (fn [[[x y] cost]]
+                                            [[x y route-cost]
+                                             {:x x :y y
+                                              :route (conj route [x y])
+                                              :route-cost (+ route-cost cost)
+                                              :estimated (+ route-cost cost (heuristic x y))}])
+                                        (get-neighbours-excluding-history grid x y route))]
+                        (if end? route-cost (recur (into rest new-paths) grid))))]
+       (search (priority-map-keyfn :estimated [0 0 0] {:x 0 :y 0 :route-cost 0 :route #{[0 0]} :estimated 0})
+               (two-dimensional-mapv identity grid))))
+
+(defn day15 [args]
+  (solve15 (->> args str/split-lines (two-dimensional-mapv char-parse-int))))
+
+(defn day15b [args]
+  (let [grid (->> args str/split-lines (two-dimensional-mapv char-parse-int))
+        add-or-ro (fn [x y z] (if (> (+ x y z) 9) (mod (+ x y z) 9) (+ x y z)))
+        big-grid (let [inc-row (fn [big-row-ds big-col-d row] 
+                                   (mapcat #(map (partial add-or-ro big-col-d %) row) big-row-ds))
+                       inc-col (fn [big-col-ds grid] 
+                                   (mapcat #(map (partial inc-row (range 5) %) grid) big-col-ds))]
+                      (inc-col (range 5) grid))]
+       (solve15 big-grid)))
